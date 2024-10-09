@@ -1,33 +1,28 @@
-import { NgFor } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { NavComponent } from "./nav/nav.component";
+import { AccountService } from './_services/account.service';
+import { HomeComponent } from './home/home.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [NavComponent, HomeComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  private httpClient = inject(HttpClient);
-  private destroyRef = inject(DestroyRef);
+  private accountService = inject(AccountService);
 
   title = 'DatingApp';
-  url = 'https://localhost:5001/api/users';
-
-  users: any;
 
   ngOnInit(): void {
-    const sub = this.httpClient.get(this.url).subscribe({
-      next: (response) => this.users = response,
-      error: err => console.error(err),
-      complete: () => console.log('Request has completed'),
-    });
-
-    this.destroyRef.onDestroy(() => sub.unsubscribe());
+    this.setCurrentUser();
   }
 
-
+  setCurrentUser() {
+    let userString = localStorage.getItem('currentUser');
+    if (userString) {
+      this.accountService.currentUser.set(JSON.parse(userString));
+    }
+  }
 }
