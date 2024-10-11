@@ -28,6 +28,7 @@
     "@angular/compiler-cli": "^18.2.0",
     "@types/jasmine": "~5.1.0",
     "bootstrap": "^5.3.3",
+    "bootswatch": "^5.3.3",
     "font-awesome": "^4.7.0",
     "jasmine-core": "~5.2.0",
     "karma": "~6.4.0",
@@ -36,6 +37,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "ngx-bootstrap": "^18.0.2",
+    "ngx-toastr": "^19.0.0",
     "typescript": "~5.5.2"
   }
 }
