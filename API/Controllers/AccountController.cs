@@ -1,15 +1,12 @@
 using System.Security.Cryptography;
 using System.Text;
-using API.Data;
 using API.DTOs;
-using API.Entities;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class AccountController(DataContext context, ITokenService tokenService) : BaseApiController
+public class AccountController(IUserRepository userRepository, ITokenService tokenService) : BaseApiController
 {
     [HttpPost("register")] // account/register
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
@@ -19,29 +16,32 @@ public class AccountController(DataContext context, ITokenService tokenService) 
             return BadRequest("Username is not unique.");
         }
 
-        using var hmac = new HMACSHA512();
+        return Ok();
 
-        var user = new AppUser
-        {
-            UserName = registerDto.Username.ToLower(),
-            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-            PasswordSalt = hmac.Key
-        };
+        // using var hmac = new HMACSHA512();
 
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
+        // var user = new AppUser
+        // {
+        //     UserName = registerDto.Username.ToLower(),
+        //     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
+        //     PasswordSalt = hmac.Key,
 
-        return new UserDto
-        {
-            Username = user.UserName,
-            Token = tokenService.CreateToken(user)
-        };
+        // };
+
+        // context.Users.Add(user);
+        // await context.SaveChangesAsync();
+
+        // return new UserDto
+        // {
+        //     Username = user.UserName,
+        //     Token = tokenService.CreateToken(user)
+        // };
     }
 
     [HttpPost("login")] // account/login
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
-        var user = await context.Users.FirstOrDefaultAsync(u => u.UserName == loginDto.Username.ToLower());
+        var user = await userRepository.GetUserByUsernameAsync(loginDto.Username.ToLower());
 
         if (user == null) return Unauthorized("Invalid username");
 
@@ -63,6 +63,7 @@ public class AccountController(DataContext context, ITokenService tokenService) 
 
     private async Task<bool> UserExists(string username)
     {
-        return await context.Users.AnyAsync<AppUser>(u => u.UserName.ToLower() == username.ToLower());
+        var user = await userRepository.GetUserByUsernameAsync(username.ToLower());
+        return user != null;
     }
 }
