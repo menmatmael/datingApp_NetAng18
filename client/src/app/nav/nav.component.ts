@@ -1,4 +1,4 @@
-import { Component, inject, DestroyRef } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../_services/account.service';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -15,19 +15,16 @@ import { TitleCasePipe } from '@angular/common';
 })
 export class NavComponent {
   accountService = inject(AccountService);
-  private destroyRef = inject(DestroyRef);
   private router = inject(Router);
   private toastr = inject(ToastrService);
 
   model: any = {};
 
   login() {
-    const sub = this.accountService.login(this.model).subscribe({
+    this.accountService.login(this.model).subscribe({
       next: () => this.router.navigateByUrl('/members'),
       error: err => this.toastr.error(err.error)
     });
-
-    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   logout() {

@@ -11,6 +11,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^18.2.0",
+    "@angular/cdk": "^18.2.8",
     "@angular/common": "^18.2.0",
     "@angular/compiler": "^18.2.0",
     "@angular/core": "^18.2.0",
@@ -36,6 +37,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "ng-gallery": "^12.0.0",
     "ngx-bootstrap": "^18.0.2",
     "ngx-toastr": "^19.0.0",
     "typescript": "~5.5.2"
