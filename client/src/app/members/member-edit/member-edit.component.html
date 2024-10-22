@@ -59,17 +59,9 @@
             </div>
           </form>
         </tab>
-        <tab heading="Edit photo">
-          Photo edit will go here
+        <tab heading="Edit photos">
+          <app-photo-editor [member]="member" (memberPhotosEdit)="onMemberPhotosEdit($event)" />
         </tab>
-        <!-- <tab heading="Photos" #photoTab="tab">
-              @if (photoTab.active) {
-                <gallery [items]="images" counter bullets thumbs class="gallery"></gallery>
-              }
-            </tab>
-            <tab heading="Messages">
-              <p>Messages will go here</p>
-            </tab> -->
       </tabset>
     </div>
   </div>

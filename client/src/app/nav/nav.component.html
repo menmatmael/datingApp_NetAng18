@@ -27,15 +27,16 @@
       <button class="btn btn-success" type="submit">Login</button>
     </form>
     } @else {
-    <div dropdown class="dropdown">
-      <a dropdownToggle class="dropdown-toggle text-light text-decoration-none">Welcome {{model.username ||
-        accountService.currentUser()?.username | titlecase}}</a>
-      <div *dropdownMenu class="dropdown-menu">
-        <a class="dropdown-item" routerLink="/member/edit">Edit Profile</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" (click)="logout()">Logout</a>
+      <img class="me-2" [src]="accountService.currentUser()?.photoUrl || 'user.png'" alt="User main image">
+      <div dropdown class="dropdown">
+        <a dropdownToggle class="dropdown-toggle text-light text-decoration-none">Welcome {{model.username ||
+          accountService.currentUser()?.username | titlecase}}</a>
+        <div *dropdownMenu class="dropdown-menu">
+          <a class="dropdown-item" routerLink="/member/edit">Edit Profile</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" (click)="logout()">Logout</a>
+        </div>
       </div>
-    </div>
     }
   </div>
 </nav>

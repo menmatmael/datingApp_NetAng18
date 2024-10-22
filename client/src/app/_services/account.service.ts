@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { User } from '../_models/user';
 import { environment } from '../../environments/environment';
 
@@ -15,14 +15,16 @@ export class AccountService {
 
   login(model: any): Observable<any> {
     return this.http.post<User>(`${this.baseUrl}account/login`, model)
-    .pipe(
-      tap(user => {
-        if (user) {
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          this.currentUser.set(user);
-        }
-      })
-    );
+      .pipe(
+        tap(user => {
+          if (user) this.setCurrentUser(user);
+        })
+      );
+  }
+
+  setCurrentUser(user: User) {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    this.currentUser.set(user);
   }
 
   logout() {
@@ -32,13 +34,10 @@ export class AccountService {
 
   register(model: any): Observable<any> {
     return this.http.post<User>(`${this.baseUrl}account/register`, model)
-    .pipe(
-      tap(user => {
-        if (user) {
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          this.currentUser.set(user);
-        }
-      })
-    );
+      .pipe(
+        tap(user => {
+          if (user) this.setCurrentUser(user);
+        })
+      );
   }
 }
