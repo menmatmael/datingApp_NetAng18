@@ -36,22 +36,22 @@ export class PhotoEditorComponent implements OnInit {
 
   setMainPhoto(photo: Photo) {
     this.memberService.setMainPhoto(photo)
-    .subscribe(() => {
-      const loggedInUser = this.accountService.currentUser();
-      if (loggedInUser) {
-        loggedInUser.photoUrl = photo.url;
-        this.accountService.setCurrentUser(loggedInUser);
-      }
-      const updatedMember = {
-        ...this.member(),
-      };
-      updatedMember.photoUrl = photo.url;
-      updatedMember.photos.forEach(p => {
-        if (p.isMain) p.isMain = false;
-        if (p.id == photo.id) p.isMain = true;
+      .subscribe(() => {
+        const loggedInUser = this.accountService.currentUser();
+        if (loggedInUser) {
+          loggedInUser.photoUrl = photo.url;
+          this.accountService.setCurrentUser(loggedInUser);
+        }
+        const updatedMember = {
+          ...this.member(),
+        };
+        updatedMember.photoUrl = photo.url;
+        updatedMember.photos.forEach(p => {
+          if (p.isMain) p.isMain = false;
+          if (p.id == photo.id) p.isMain = true;
+        });
+        this.memberPhotosEdit.emit(updatedMember);
       });
-      this.memberPhotosEdit.emit(updatedMember);
-    });
   }
 
   deletePhoto(photo: Photo) {
@@ -83,6 +83,20 @@ export class PhotoEditorComponent implements OnInit {
       const photo = JSON.parse(response);
       const updatedMember = { ...this.member() };
       updatedMember.photos.push(photo);
+      // this.memberPhotosEdit.emit(updatedMember);
+      if (photo.isMain) {
+        const loggedInUser = this.accountService.currentUser();
+        if (loggedInUser) {
+          loggedInUser.photoUrl = photo.url;
+          this.accountService.setCurrentUser(loggedInUser);
+        }
+        updatedMember.photoUrl = photo.url;
+        updatedMember.photos.forEach(p => {
+          if (p.isMain) p.isMain = false;
+          if (p.id == photo.id) p.isMain = true;
+        });
+        // this.memberPhotosEdit.emit(updatedMember);
+      }
       this.memberPhotosEdit.emit(updatedMember);
     }
   }

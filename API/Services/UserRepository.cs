@@ -50,4 +50,9 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
     {
         context.Entry(user).State = EntityState.Modified;
     }
+
+    public void Add(AppUser user)
+    {
+        context.Entry(user).State = EntityState.Added;
+    }
 }

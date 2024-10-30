@@ -3,9 +3,20 @@ import { Member } from '../../_models/member';
 import { AccountService } from '../../_services/account.service';
 import { MembersService } from '../../_services/members.service';
 import { TabsModule } from 'ngx-bootstrap/tabs';
-import { FormsModule, NgForm } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormsModule, NgForm, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { PhotoEditorComponent } from "../photo-editor/photo-editor.component";
+
+
+function conditionalValidator(condition: boolean, validator: ValidatorFn): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!condition) {
+      return null;
+    }
+
+    return validator(control);
+  };
+}
 
 @Component({
   selector: 'app-member-edit',
@@ -30,6 +41,14 @@ export class MemberEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadMember();
+    // Using the conditionalValidator with a FormControl
+    //  const myFormControl = new FormControl('', conditionalValidator(condition, Validators.required));
+
+    const myFormControl = new FormControl('', { validators: Validators.required, updateOn: 'blur' });
+    const myFormGroup = new FormGroup(
+      { name: new FormControl('', { validators: Validators.required, updateOn: 'blur' }) },
+      { updateOn: 'submit' }
+    );
   }
 
   loadMember() {
