@@ -6,6 +6,8 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { AbstractControl, FormControl, FormGroup, FormsModule, NgForm, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { PhotoEditorComponent } from "../photo-editor/photo-editor.component";
+import { DatePipe } from '@angular/common';
+import { TimeagoModule } from 'ngx-timeago';
 
 
 function conditionalValidator(condition: boolean, validator: ValidatorFn): ValidatorFn {
@@ -21,7 +23,7 @@ function conditionalValidator(condition: boolean, validator: ValidatorFn): Valid
 @Component({
   selector: 'app-member-edit',
   standalone: true,
-  imports: [TabsModule, FormsModule, PhotoEditorComponent],
+  imports: [TabsModule, FormsModule, PhotoEditorComponent, DatePipe, TimeagoModule],
   templateUrl: './member-edit.component.html',
   styleUrl: './member-edit.component.css'
 })
