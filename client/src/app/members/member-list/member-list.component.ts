@@ -14,6 +14,7 @@ import { ButtonsModule } from 'ngx-bootstrap/buttons';
 })
 export class MemberListComponent implements OnInit {
   membersService = inject(MembersService);
+
   genderList = [
     {
       value: 'male',

@@ -1,16 +1,13 @@
-using System;
 using API.Data;
 using API.DTOs;
 using API.Entities;
-using API.Extensions;
 using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 
-namespace API.Services;
+namespace API.Repositories;
 
 public class UserRepository(DataContext context, IMapper mapper) : IUserRepository
 {
@@ -33,12 +30,12 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
             query = query.Where(u => u.Gender == userParams.Gender);
         }
 
-        var minDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge-1));
+        var minDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge - 1));
         var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge));
 
         query = query.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
 
-        query = userParams.OrderBy switch 
+        query = userParams.OrderBy switch
         {
             "created" => query.OrderByDescending(u => u.Created),
             _ => query.OrderByDescending(u => u.LastActive)
