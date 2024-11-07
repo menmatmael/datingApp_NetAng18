@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Member } from '../_models/member';
 import { LikesParams } from "../_models/LikesParams";
 import { PaginatedResult } from '../_models/PaginatedResult';
@@ -29,7 +29,6 @@ export class LikesService {
     return this.http.get<Member[]>(`${this.baseUrl}likes`, { observe: 'response', params })
       .subscribe(response => {
         setPaginatedResponse(response, this.paginatedResult);
-        // this.memberCache.set(cacheKey, response);
       });
   }
 
