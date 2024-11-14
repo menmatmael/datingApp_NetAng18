@@ -14,8 +14,9 @@ public class UsersController(IUserRepository userRepository,
                              IMapper mapper,
                              IPhotoService photoService) : BaseApiController
 {
+    [Authorize(Roles = "Admin")]
     [HttpGet] // api/users
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
     {
         userParams.CurrentUsername = User.GetUsername();
         var users = await userRepository.GetMembersAsync(userParams);
@@ -25,6 +26,7 @@ public class UsersController(IUserRepository userRepository,
         return Ok(users);
     }
 
+    // [Authorize(Roles = "Members")]
     [HttpGet("{username}")] // api/users/anicet
     public async Task<ActionResult<MemberDto>> GetUser(string username)
     {
@@ -80,7 +82,7 @@ public class UsersController(IUserRepository userRepository,
     }
 
     [HttpPut("set-main-photo/{photoId:int}")]
-    public async Task<ActionResult> SetMainPhoto(int photoId) 
+    public async Task<ActionResult> SetMainPhoto(int photoId)
     {
         var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
 
@@ -112,7 +114,7 @@ public class UsersController(IUserRepository userRepository,
         if (photo == null) return BadRequest("Could not find the photo");
         if (photo.IsMain) return BadRequest("The main photo cannot be deleted");
 
-        if (photo.PublicId != null) 
+        if (photo.PublicId != null)
         {
             var result = await photoService.DeletePhotoAsync(photo.PublicId);
             if (result.Error != null) return BadRequest(result.Error.Message);

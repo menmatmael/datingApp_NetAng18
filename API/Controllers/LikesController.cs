@@ -13,15 +13,15 @@ public class LikesController(ILikesRepository likesRepository) : BaseApiControll
     [HttpPost("{targetUserId:int}")]
     public async Task<ActionResult> ToggleLike(int targetUserId)
     {
-        var sourceUserId = User.GetUserId();
+        int sourceUserId = User.GetUserId();
 
         if (sourceUserId == targetUserId) return BadRequest("You cannot like yourself");
 
-        var existingLike = await likesRepository.GetUserLike(sourceUserId, targetUserId);
+        UserLike? existingLike = await likesRepository.GetUserLike(sourceUserId, targetUserId);
 
         if (existingLike == null)
         {
-            var like = new UserLike
+            UserLike like = new UserLike
             {
                 SourceUserId = sourceUserId,
                 TargetUserId = targetUserId
@@ -49,7 +49,7 @@ public class LikesController(ILikesRepository likesRepository) : BaseApiControll
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetUserLikes([FromQuery] LikesParams likesParams)
     {
         likesParams.UserId = User.GetUserId();
-        var users = await likesRepository.GetUserLikes(likesParams);
+        PagedList<MemberDto> users = await likesRepository.GetUserLikes(likesParams);
 
         Response.AddPaginationHeader(users);
 

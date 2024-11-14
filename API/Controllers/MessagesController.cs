@@ -18,17 +18,17 @@ public class MessagesController(
     [HttpPost]
     public async Task<ActionResult<MessageDto>> CreateMessage(CreateMessageDto createMessageDto)
     {
-        var username = User.GetUsername();
+        string username = User.GetUsername();
 
         if (username == createMessageDto.RecipientUsername) return BadRequest("You cannot message yourself");
 
-        var sender = await userRepository.GetUserByUsernameAsync(username);
-        var recipient = await userRepository.GetUserByUsernameAsync(createMessageDto.RecipientUsername);
+        AppUser? sender = await userRepository.GetUserByUsernameAsync(username);
+        AppUser? recipient = await userRepository.GetUserByUsernameAsync(createMessageDto.RecipientUsername);
 
-        if (recipient == null || sender == null)
+        if (recipient == null || sender == null || sender.UserName == null || recipient.UserName == null)
             return BadRequest("cannot send message as recipent or sender can't be retrieved.");
 
-        var message = new Message
+        Message message = new Message
         {
             Sender = sender,
             SenderUsername = sender.UserName,
@@ -49,7 +49,7 @@ public class MessagesController(
     {
         messageParams.Username = User.GetUsername();
 
-        var messages = await messageRepository.GetMessagesForUser(messageParams);
+        PagedList<MessageDto> messages = await messageRepository.GetMessagesForUser(messageParams);
 
         Response.AddPaginationHeader(messages);
 
@@ -59,7 +59,7 @@ public class MessagesController(
     [HttpGet("thread/{recipientUsername}")]
     public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessagesThread(string recipientUsername)
     {
-        var currentUsername = User.GetUsername();
+        string currentUsername = User.GetUsername();
 
         return Ok(await messageRepository.GetMessageThread(currentUsername, recipientUsername));
     }
@@ -67,9 +67,9 @@ public class MessagesController(
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteMessage(int id)
     {
-        var currentUsername = User.GetUsername();
+        string currentUsername = User.GetUsername();
 
-        var message = await messageRepository.GetMessage(id);
+        Message? message = await messageRepository.GetMessage(id);
 
         if (message == null) return BadRequest("cannot delete this message");
 
