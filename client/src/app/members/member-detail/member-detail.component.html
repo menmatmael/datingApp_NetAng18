@@ -3,6 +3,11 @@
     <div class="card">
       <img [src]="member.photoUrl || 'user.png'" [alt]="member.knownAs" class="card-img img-thumbnail">
       <div class="card-body">
+        @if (presenceService.onlineUsers().includes(member.username)) {
+          <div class="mb-2">
+            <i class="fa fa-user-circle text-success"></i> Online now
+          </div>
+        }
         <div>
           <strong>Location:</strong>
           <p>{{member.city}}, {{member.country}}</p>
@@ -42,15 +47,11 @@
       </tab>
       <tab heading="Photos" #photoTab="tab" (selectTab)="onTabActivated($event)">
         @if (photoTab.active) {
-        <gallery [items]="images" itemAutosize="true" counter bullets thumbs class="gallery"></gallery>
+          <gallery [items]="images" itemAutosize="true" counter bullets thumbs class="gallery"></gallery>
         }
       </tab>
       <tab heading="Messages" (selectTab)="onTabActivated($event)">
-        <app-member-messages
-          [username]="member.username"
-          [messages]="messages"
-          (updateMessage)="onUpdateMessage($event)"
-        ></app-member-messages>
+        <app-member-messages [username]="member.username"></app-member-messages>
       </tab>
     </tabset>
   </div>

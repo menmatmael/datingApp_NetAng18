@@ -4,6 +4,7 @@ import { Observable, tap } from 'rxjs';
 import { User } from '../_models/user';
 import { environment } from '../../environments/environment';
 import { LikesService } from './likes.service';
+import { PresenceService } from './presence.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ import { LikesService } from './likes.service';
 export class AccountService {
   private http = inject(HttpClient);
   private likesService = inject(LikesService);
+  private presenceService = inject(PresenceService);
   baseUrl = environment.apiUrl;
 
   currentUser = signal<User | null>(null);
@@ -38,11 +40,13 @@ export class AccountService {
     localStorage.setItem('currentUser', JSON.stringify(user));
     this.currentUser.set(user);
     this.likesService.getLikeIds();
+    this.presenceService.createHubConnection(user);
   }
 
   logout() {
     localStorage.removeItem('currentUser');
     this.currentUser.set(null);
+    this.presenceService.stopHubConnection();
   }
 
   register(model: any): Observable<any> {

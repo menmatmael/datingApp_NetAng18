@@ -2,6 +2,7 @@ using API.Data;
 using API.Entities;
 using API.Extensions;
 using API.Middleware;
+using API.SignalR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,7 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(x => x.AllowAnyHeader()
                   .AllowAnyMethod()
+                  .AllowCredentials()
                   .WithOrigins("http://localhost:4200", "https://localhost:4200"));
                 
 app.UseAuthentication();
@@ -29,6 +31,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.MapHub<PresenceHub>("hubs/presence");
+app.MapHub<MessageHub>("hubs/message");
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
@@ -38,6 +42,8 @@ try
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();
+    await context.Database.ExecuteSqlRawAsync("DELETE FROM [Connections]");
+    // await context.Database.ExecuteSqlRawAsync("DELETE FROM \"Connections\""); // PostgreSql
     await Seed.SeedUsers(userManager, roleManager);
 }
 catch (Exception ex)

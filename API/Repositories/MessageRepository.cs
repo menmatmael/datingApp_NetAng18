@@ -48,14 +48,15 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
     public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUsername, string recipientUsername)
     {
         var messages = await context.Messages
-            .Include(m => m.Sender).ThenInclude(s => s.Photos)
-            .Include(m => m.Recipient).ThenInclude(r => r.Photos)
+            // .Include(m => m.Sender).ThenInclude(s => s.Photos)
+            // .Include(m => m.Recipient).ThenInclude(r => r.Photos)
             .Where(m =>
                 m.RecipientUsername == currentUsername && m.RecipientDeleted == false && m.SenderUsername == recipientUsername ||
                 m.SenderUsername == currentUsername && m.SenderDeleted == false && m.RecipientUsername == recipientUsername)
             .OrderBy(m => m.MessageSent)
+            .ProjectTo<MessageDto>(mapper.ConfigurationProvider)
             .ToListAsync();
-        
+
         var unreadMessages = messages.Where(m => m.DateRead == null && m.RecipientUsername == currentUsername).ToList();
 
         if (unreadMessages.Count != 0)
@@ -64,11 +65,41 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
             await context.SaveChangesAsync();
         }
 
-        return mapper.Map<IEnumerable<MessageDto>>(messages);
+        return messages;
+    }
+
+    public void AddGroup(Group group)
+    {
+        context.Groups.Add(group);
+    }
+
+    public async Task<Connection?> GetConnection(string connectionId)
+    {
+        return await context.Connections.FindAsync(connectionId);
+    }
+    
+    public void RemoveConnection(Connection connection)
+    {
+        context.Connections.Remove(connection);
+    }
+
+    public async Task<Group?> GetMessageGroup(string groupName)
+    {
+        return await context.Groups
+                    .Include(g => g.Connections)
+                    .FirstOrDefaultAsync(g => g.Name == groupName);
     }
 
     public async Task<bool> SaveAllAsync()
     {
         return await context.SaveChangesAsync() > 0;
+    }
+
+    public async Task<Group?> GetGroupForConnection(string connectionId)
+    {
+        return await context.Groups
+                    .Include(g => g.Connections)
+                    .Where(c => c.Connections.Any(c => c.ConnectionId == connectionId))
+                    .FirstOrDefaultAsync();
     }
 }
