@@ -3,31 +3,35 @@
     @if (messageService.messageThread().length === 0) {
       <p>No messages yet</p>
     } @else {
-    <ul class="chat">
-      @for (message of messageService.messageThread(); track message.id) {
-      <li>
-        <div>
-          <span class="chat-img float-end">
-            <img [src]="message.senderPhotoUrl || 'user.png'" alt="Image of message sender" class="rounded-circle">
-          </span>
-          <div class="chat-body">
-            <div class="header">
-              <small class="text-muted">
-                <span class="fa fa-clock-o">{{message.messageSent | timeago}}</span>
-                @if (!message.dateRead && message.senderUsername !== username()) {
-                  <span class="text-danger"> (unread)</span>
-                }
-                @if (message.dateRead && message.senderUsername !== username()) {
-                  <span class="text-success"> (read {{message.dateRead | timeago}})</span>
-                }
-              </small>
+      <ul
+        class="chat"
+        #scrollMe
+        style="overflow: scroll; max-height: 500px; scroll-behavior: smooth;"
+      >
+        @for (message of messageService.messageThread(); track message.id) {
+          <li>
+            <div>
+              <span class="chat-img float-end">
+                <img [src]="message.senderPhotoUrl || 'user.png'" alt="Image of message sender" class="rounded-circle">
+              </span>
+              <div class="chat-body">
+                <div class="header">
+                  <small class="text-muted">
+                    <span class="fa fa-clock-o">{{message.messageSent | timeago}}</span>
+                    @if (!message.dateRead && message.senderUsername !== username()) {
+                      <span class="text-danger"> (unread)</span>
+                    }
+                    @if (message.dateRead && message.senderUsername !== username()) {
+                      <span class="text-success"> (read {{message.dateRead | timeago}})</span>
+                    }
+                  </small>
+                </div>
+                <p>{{message.content}}</p>
+              </div>
             </div>
-            <p>{{message.content}}</p>
-          </div>
-        </div>
-      </li>
-      }
-    </ul>
+          </li>
+        }
+      </ul>
     }
   </div>
   <div class="card-footer">
@@ -39,7 +43,8 @@
           [(ngModel)]="messageContent"
           required
           class="form-control"
-          placeholder="Send a private message">
+          placeholder="Send a private message"
+        >
         <div class="input-group-append">
           <button [disabled]="messageForm.invalid" class="btn btn-primary" type="submit">Send</button>
         </div>
